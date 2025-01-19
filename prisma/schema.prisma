@@ -139,22 +139,36 @@ model StoreProduct {
   @@map("store_products")
 }
 
+enum ProductCategory {
+  VEGGIES
+  FRUITS
+  MEAT
+  FISH
+  DRINKS
+  SNACKS
+}
+
 model Product {
-  id            Int                   @id @default(autoincrement())
-  productName   String
-  description   String
-  weight        Int
-  price         Int
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
-  productImages ProductImage[]
-  categories    CategoriesOnProduct[]
-  carts         Cart[]
-  storeProducts StoreProduct[]
-  StockJournal  StockJournal[]
-  Discount      Discount[]
-  Voucher       Voucher[]
-  OrderItems    OrderItems[]
+  id              Int             @id @default(autoincrement())
+  productName     String
+  description     String
+  longDesc        String          @default("") @db.Text
+  color           String          @default("")
+  type            String          @default("")
+  stock           Int             @default(0)
+  weight          Int
+  price           Int
+  productCategory ProductCategory @default(MEAT)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  productImages   ProductImage[]
+  // categories      CategoriesOnProduct[]
+  carts           Cart[]
+  storeProducts   StoreProduct[]
+  StockJournal    StockJournal[]
+  Discount        Discount[]
+  Voucher         Voucher[]
+  OrderItems      OrderItems[]
 
   @@map("products")
 }
@@ -168,27 +182,27 @@ model ProductImage {
   @@map("product_images")
 }
 
-model Category {
-  id           Int                   @id @default(autoincrement())
-  categoryName String
-  products     CategoriesOnProduct[]
+// model Category {
+//   id           Int                   @id @default(autoincrement())
+//   categoryName String
+//   products     CategoriesOnProduct[]
 
-  @@map("categories")
-}
+//   @@map("categories")
+// }
 
-model CategoriesOnProduct {
-  productId  Int
-  categoryId Int
-  product    Product  @relation(fields: [productId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+// model CategoriesOnProduct {
+//   productId  Int
+//   categoryId Int
+//   product    Product  @relation(fields: [productId], references: [id])
+//   category   Category @relation(fields: [categoryId], references: [id])
 
-  @@id([productId, categoryId])
-  @@map("categories_on_product")
-}
+//   @@id([productId, categoryId])
+//   @@map("categories_on_product")
+// }
 
 model Cart {
   id        Int     @id @default(autoincrement())
-  qty       Int
+  quantity  Int
   userId    Int
   productId Int
   storeId   Int
@@ -196,6 +210,7 @@ model Cart {
   products  Product @relation(fields: [productId], references: [id])
   stores    Store   @relation(fields: [storeId], references: [id])
 
+  @@unique([userId, productId])
   @@map("carts")
 }
 

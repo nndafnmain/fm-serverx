@@ -1,6 +1,6 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class R2Service {
@@ -17,15 +17,39 @@ export class R2Service {
 		});
 	}
 
-	async uploadFile(file: Express.Multer.File, bucketName: string) {
-		const fileKey = `${v4}-${file.originalname}`;
-		const command = new PutObjectCommand({
-			Bucket: bucketName,
-			Key: fileKey,
-			Body: file.buffer,
-			ContentType: file.mimetype,
+	async uploadFile(
+		file: Express.Multer.File,
+		productId: number,
+	): Promise<string> {
+		if (!file || !file.buffer) {
+			throw new Error("Invalid file: Buffer is undefined.");
+		}
+
+		const fileName = `${file.originalname}`;
+		const fileKey = `product/${productId}/${fileName}`;
+
+		console.log("Uploading file:", {
+			originalname: file.originalname,
+			size: file.size,
+			mimetype: file.mimetype,
+			destinationKey: fileKey,
 		});
-		await this.s3Client.send(command);
-		return `https://${bucketName}.r2.cloudflarestorage.com/${fileKey}`;
+
+		try {
+			const command = new PutObjectCommand({
+				Bucket: "fm-server",
+				Key: fileKey,
+				Body: file.buffer,
+				ContentType: file.mimetype,
+			});
+
+			await this.s3Client.send(command);
+			console.log("File successfully uploaded to R2:", fileKey);
+
+			return fileName;
+		} catch (error) {
+			console.error("Error uploading file to R2:", error);
+			throw error;
+		}
 	}
 }
