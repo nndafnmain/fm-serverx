@@ -205,10 +205,10 @@ model Cart {
   quantity  Int
   userId    Int
   productId Int
-  storeId   Int
+  storeId   Int?
   users     User    @relation(fields: [userId], references: [id])
   products  Product @relation(fields: [productId], references: [id])
-  stores    Store   @relation(fields: [storeId], references: [id])
+  stores    Store?  @relation(fields: [storeId], references: [id])
 
   @@unique([userId, productId])
   @@map("carts")

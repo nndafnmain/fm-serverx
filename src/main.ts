@@ -17,8 +17,8 @@ async function bootstrap() {
 
 	app.useGlobalFilters(new GlobalExceptionFilter());
 	app.enableCors({
-		origin: "http://localhost:5173",
-		methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+		// origin: "http://localhost:5173",
+		// methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 	});
 	const prisma = new PrismaClient({
 		log: ["query", "info", "warn", "error"],
