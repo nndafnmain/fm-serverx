@@ -46,7 +46,11 @@ export class CartService {
 		return item;
 	}
 
-	async decreaseItem(productId: number, userId: number) {
+	async updateItemQuantity(
+		productId: number,
+		userId: number,
+		quantity: number,
+	) {
 		const cartItem = await this.prisma.cart.findUnique({
 			where: {
 				userId_productId: { userId, productId },
@@ -54,25 +58,15 @@ export class CartService {
 		});
 
 		if (!cartItem) {
-			throw new NotFoundException("Item in cart is not not found!");
+			throw new NotFoundException("Item in cart not found!");
 		}
 
-		if (cartItem.quantity > 1) {
-			return this.prisma.cart.update({
-				where: {
-					id: cartItem.id,
-				},
-				data: {
-					quantity: {
-						decrement: 1,
-					},
-				},
-			});
-		}
-
-		return this.prisma.cart.delete({
+		return this.prisma.cart.update({
 			where: {
 				id: cartItem.id,
+			},
+			data: {
+				quantity,
 			},
 		});
 	}
@@ -120,6 +114,7 @@ export class CartService {
 				userId: user.id,
 			},
 			select: {
+				quantity: true,
 				products: {
 					select: {
 						id: true,

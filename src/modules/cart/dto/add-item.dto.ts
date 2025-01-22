@@ -7,9 +7,11 @@ export class AddItemDto {
 	userId: number;
 }
 
-export class DecItemDto {
+export class UpdateItemDto {
 	@IsNumber()
 	productId: number;
 	@IsNumber()
 	userId: number;
+	@IsNumber()
+	quantity: number;
 }
