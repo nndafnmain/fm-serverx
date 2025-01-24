@@ -348,14 +348,14 @@ model Order {
   totalWeight    Int
   status         OrderStatus @default(WAITING_FOR_PAYMENT)
   userId         Int
-  storeId        Int
+  storeId        Int?
   userVoucherId  Int?
   userDiscountId Int?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
   users      User         @relation(fields: [userId], references: [id])
-  stores     Store        @relation(fields: [storeId], references: [id])
+  stores     Store?       @relation(fields: [storeId], references: [id])
   vouchers   Voucher?     @relation(fields: [userVoucherId], references: [id])
   discounts  Discount?    @relation(fields: [userDiscountId], references: [id])
   orderItems OrderItems[]
